@@ -20,11 +20,12 @@
 const int numInputChannels = 6;
 // Each channel will be assigned a unique pin in the range defined by PORTS_TO_USE
 uint8_t channelPins[numInputChannels] = {7,6,5,4,3,2};
-const byte numOutputChannels = 2;
+const byte numOutputChannels = 4;
 
 enum Behaviour {
   SimpleTentacle, // X/Y tentacle movement only e.g. https://www.thingiverse.com/thing:6986
   WigglyTentacle, // X/Y tentacle with random wigggles added.
+  DualTentacles, // X/Y x 2
   SimpleEye, // X movement of eye, Y movement of eyelids
   Eye,
 };
@@ -33,7 +34,7 @@ enum Behaviour {
 PCA9685 pwmController;
 PCA9685_ServoEvaluator pwmServo;
 FastRCReader RC;
-Behaviour behaviour = Behaviour::SimpleEye;
+Behaviour behaviour = Behaviour::DualTentacles;
 
 // Array of current channel input values
 int channelInput[numInputChannels];
@@ -84,6 +85,43 @@ void ApplyLogic(){
       channelOutput[1] = pwmServo.pwmForAngle(Y);
     }
       break;
+
+
+    case Behaviour::DualTentacles: 
+    {
+      int X1 = 0;
+      // The ON period of almost all RC pulses range from 1000us to 2000us.
+      // We'll remap this to an angle from -45 to +45
+      if(channelInput[0] > 995 && channelInput[0] < 2000) { 
+        X1 = map(channelInput[0], 1000, 2000, -90, 90);
+      }
+      //Serial.println(X);
+      channelOutput[0] = pwmServo.pwmForAngle(X1);
+
+      int Y1 = 0;
+      if(channelInput[1] > 995 && channelInput[1] < 2000) { 
+        Y1 = map(channelInput[1], 1000, 2000, -90, 90);
+      }
+      channelOutput[1] = pwmServo.pwmForAngle(Y1);
+
+      int X2 = 0;
+      // The ON period of almost all RC pulses range from 1000us to 2000us.
+      // We'll remap this to an angle from -45 to +45
+      if(channelInput[0] > 995 && channelInput[2] < 2000) { 
+        X2 = map(channelInput[0], 1000, 2000, -90, 90);
+      }
+      //Serial.println(X);
+      channelOutput[2] = pwmServo.pwmForAngle(X2);
+
+      int Y2 = 0;
+      if(channelInput[1] > 995 && channelInput[3] < 2000) { 
+        Y2 = map(channelInput[1], 1000, 2000, -90, 90);
+      }
+      channelOutput[3 ] = pwmServo.pwmForAngle(Y2);
+      
+    }
+    break;
+
 
     case Behaviour::SimpleEye: 
     {
