@@ -19,4 +19,8 @@ To broadcast all 10 channels, we need to upgrade the firmware of the transmitter
 ![Flashing upgraded firmware using Arduino Nano](FS-i6%20Arduino%20Mod_bb.jpg?raw=true "Using an Arduino Nano to flash firmware to FlySky FS-i6 transmitter")
 Then, run <a href-"https://github.com/benb0jangles/FlySky-i6-Mod-/tree/master/10ch%20Mod%20i6%20Updater/10ch_MOD_i6_Programmer_V1_5">this updater program</a> to flash new firmware to the transmitter, allowing all the face controls to be assigned to channels.
 
+### Wiring via iBus interface ###
+![iBus output from FS-IA6B wired to Arduino]FS-IA6B%2010-channel%20wiring_bb.jpg?raw=true "Wiring 6-channel iBus output from FS-IA6B receiver to Arduino Nano")
+
+
 
