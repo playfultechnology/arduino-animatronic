@@ -10,26 +10,37 @@
 // AltSoftSerial is a better replacement to default Arduino SoftwareSerial library
 // https://www.pjrc.com/teensy/td_libs_AltSoftSerial.html
 #include "src/AltSoftSerial/AltSoftSerial.h"
+// FlySky iBus interface adapted from https://gitlab.com/timwilkinson/FlySkyIBus
 #include "src/FlySkyIBus/FlySkyIBus.h"
 
 // CONSTANTS
-// How many channels to read from the iBus packet 
+// How many channels to read from the iBus packet (max 14)
 const int numInputChannels = 10;
 
 // GLOBALS
-// AltSoftSerial received on Pin 8
-AltSoftSerial ibusSerial;
+// AltSoftSerial receives serial data on Pin 8
+AltSoftSerial iBusSerial;
+// Instantiate an IBus object to process IBus data
+FlySkyIBus iBus;
 
 void setup() {
   // Software serial connection to the FS-IA6B receiver 
-  ibusSerial.begin(115200);
-  IBus.begin(ibusSerial);
+  iBusSerial.begin(115200);
+  // Attach the IBus object to the ibusSerial interface
+  iBus.begin(iBusSerial);
   // Hardware USB serial connection to the Arduino IDE monitor
   Serial.begin(115200);
   Serial.println("Ready!");
 }
 
 void loop() {
- IBus.loop();
- Serial.println(IBus.readChannel(0), HEX);
+  // iBus data is sent is discrete packets. We'll call IBus.loop() on every
+  // frame to check whether a new packet has been received. If so, it will return true.
+  if(iBus.loop()) {
+    for(int i=0; i<numInputChannels; i++) {
+      Serial.print(iBus.readChannel(i));
+      Serial.print(",");
+    }
+    Serial.println("");
+  }
 }

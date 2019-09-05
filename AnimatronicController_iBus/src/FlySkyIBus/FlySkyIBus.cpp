@@ -5,8 +5,6 @@
 #include <Arduino.h>
 #include "FlySkyIBus.h"
 
-FlySkyIBus IBus;
-
 void FlySkyIBus::begin(HardwareSerial& serial)
 {
   serial.begin(115200);
@@ -24,7 +22,7 @@ void FlySkyIBus::begin(Stream& stream)
   this->lchksum = 0;
 }
 
-void FlySkyIBus::loop(void)
+bool FlySkyIBus::loop(void)
 {
   while (stream->available() > 0)
   {
@@ -39,7 +37,7 @@ void FlySkyIBus::loop(void)
     switch (state)
     {
       case GET_LENGTH:
-        if (v <= PROTOCOL_LENGTH)
+        if (v == PROTOCOL_LENGTH)
         {
           ptr = 0;
           len = v - PROTOCOL_OVERHEAD;
@@ -75,10 +73,10 @@ void FlySkyIBus::loop(void)
           {
             case PROTOCOL_COMMAND40:
               // Valid - extract channel data
-              for (uint8_t i = 1; i < PROTOCOL_CHANNELS * 2 + 1; i += 2)
-              {
-                channel[i / 2] = buffer[i] | (buffer[i + 1] << 8);
-              }
+			  for (int i=0; i < PROTOCOL_CHANNELS; i++) {
+				  channel[i] = (buffer[2*(i+1)] <<8) | (buffer[(2*i)+1]);
+			  }
+			  return true;
               break;
 
             default:
@@ -93,6 +91,7 @@ void FlySkyIBus::loop(void)
         break;
     }
   }
+  return false;
 }
 
 uint16_t FlySkyIBus::readChannel(uint8_t channelNr)
