@@ -25,6 +25,12 @@
 #ifndef PCA9685_H
 #define PCA9685_H
 
+
+// ESP-based boards don't define required buffer length in avr/libraries/Wire.h
+#ifndef __AVR__
+	#define BUFFER_LENGTH 128
+#endif
+
 // Library Setup
 
 // Uncomment this define to enable use of the software i2c library (min 4MHz+ processor required).
