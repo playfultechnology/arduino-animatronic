@@ -27,7 +27,7 @@ The iBus interface uses a 115,200 baud serial connection. My initial build used 
 
 #### Using hardware serial on an ESP32 (3.3V) ####
 However, I noticed after a while that the Arduino would occassionally crash, I suspect as a result of a buffer overrun with the emulation not being able to handle the 115,200 baud rate required by the iBus connection. A better solution is therefore to use a board with a dedicated hardware UART, such as an Arduino MEGA, or an ESP32. The PCA9685 can operate at 3.3V logic just fine so, since the ESP32 is the more capable board, I opted to adopt that approach instead:
-![iBus output from FS-IA6B wired to ESP32](FS-IA6B%2010-channel%20wiring_ESP32_bb.jpg?raw=true "Wiring 6-channel iBus output from FS-IA6B receiver to ESP32")
+![iBus output from FS-IA6B wired to ESP32](Animatronic 10ch_iBus_ESP32_bb.jpg?raw=true "Wiring 6-channel iBus output from FS-IA6B receiver to ESP32")
 
 
 
