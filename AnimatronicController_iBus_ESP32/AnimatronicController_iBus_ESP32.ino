@@ -6,21 +6,16 @@
  * positions of an array of servo motors via a PCA9685 PWM controller.
  */
 
+// DEFINES
+// Hardware UART port to use for iBus interface
+#define iBusSerial Serial2
+
 // INCLUDES
 // Wire library used for I2C communication
 #include <Wire.h>
 // PCA9685 16-channel PWM controller
 // See: https://github.com/NachtRaveVL/PCA9685-Arduino
 #include "src/PCA9685/PCA9685.h"
-#ifndef SERIAL2
-  // AltSoftSerial is a better replacement to default Arduino SoftwareSerial library
-  // https://www.pjrc.com/teensy/td_libs_AltSoftSerial.html
-  #include "src/AltSoftSerial/AltSoftSerial.h"
-  // AltSoftSerial receives serial data on Pin 8
-  AltSoftSerial iBusSerial;
-#else
-  #define iBusSerial Serial2
-#endif
 // FlySky iBus interface adapted from https://gitlab.com/timwilkinson/FlySkyIBus
 #include "src/FlySkyIBus/FlySkyIBus.h"
 
