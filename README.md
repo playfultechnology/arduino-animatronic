@@ -15,12 +15,19 @@ Using the FS-IA6 receiver module which often comes supplied with the transmitter
 The FS-iA6B is a newer receiver module than the FS-iA6, and is sometimes provided instead of the FS-iA6. While still being advertised as a 6-channel receiver and having only 6 PWM output pins, it includes support for the "iBus" protocol, which is a serial data interface that can carry up to 14-channels. Those extra channels makes the controller a very attractive choice for animatronic control. To make use of them, a few steps are required:
 
 ### Upgrade transmitter firmware ###
-To broadcast all 10 channels, we need to upgrade the firmware of the transmitter, which is normally done by connecting a separately-sold specialist USB data cable to the "trainer" socket on the back of the transmitter. However, since this is an Arduino project, you can use an Arduino to upgrade the firmware instead, wired as follows:
+The FS-i6X controller already supports 10 channels, but to broadcast all 10 channels from the cheaper FS-i6 controller, we need to upgrade the firmware of the transmitter, which is normally done by connecting a separately-sold specialist USB data cable to the "trainer" socket on the back of the transmitter. However, since this is an Arduino project, you can use an Arduino to upgrade the firmware instead, wired as follows:
 ![Flashing upgraded firmware using Arduino Nano](FS-i6%20Arduino%20Mod_bb.jpg?raw=true "Using an Arduino Nano to flash firmware to FlySky FS-i6 transmitter")
 Then, run <a href="https://github.com/benb0jangles/FlySky-i6-Mod-/tree/master/10ch%20Mod%20i6%20Updater/10ch_MOD_i6_Programmer_V1_5">this updater program</a> to flash new firmware to the transmitter, allowing all the face controls to be assigned to channels.
 
 ### Wiring via iBus interface ###
+
+#### Using software serial on an Arduino Nano (5V) ####
+The iBus interface uses a 115,200 baud serial connection. My initial build used Paul Stoffregen's excellent AltSoftSerial library to emulate this serial connection on GPIO pin 8 of an Arduino Nano: 
 ![iBus output from FS-IA6B wired to Arduino](FS-IA6B%2010-channel%20wiring_bb.jpg?raw=true "Wiring 6-channel iBus output from FS-IA6B receiver to Arduino Nano")
+
+#### Using hardware serial on an ESP32 (3.3V) ####
+I noticed after a while that the Arduino in the setup would occasionally crash, I suspect as a result of a buffer overrun with the emulation not being able to handle the 115,200 baud rate required by the iBus connection. A better solution is therefore to use a board with a dedicated hardware UART, such as an Arduino MEGA, or an ESP32. The PCA9685 can operate at 3.3V logic just fine so, since the ESP32 is the more capable board, I opted to adopt that approach instead:
+![iBus output from FS-IA6B wired to ESP32](Animatronic%2010ch_iBus_ESP32_bb.jpg "Wiring 6-channel iBus output from FS-IA6B receiver to ESP32")
 
 
 
