@@ -18,6 +18,8 @@
 #include "src/PCA9685/PCA9685.h"
 // FlySky iBus interface adapted from https://gitlab.com/timwilkinson/FlySkyIBus
 #include "src/FlySkyIBus/FlySkyIBus.h"
+// For OLED Display
+#include <lcdgfx.h>
 
 // CONSTANTS
 // How many channels to read from the iBus packet (max 14)
@@ -36,7 +38,6 @@ enum Behaviour {
 };
 
 // GLOBALS
-
 // Instantiate an IBus object to process IBus data
 FlySkyIBus iBus;
 // Initialise the PWM controller which will send output to the servos
@@ -48,6 +49,8 @@ Behaviour behaviour = Behaviour::SimpleTentacle;
 int channelInput[numInputChannels];
 // Array of output channel values to send to PCA9685
 int channelOutput[numOutputChannels];
+// OLED display
+DisplaySSD1306_128x64_I2C display(-1); 
 
 void setup() {
   // Software serial connection to the FS-IA6B receiver 
@@ -68,6 +71,13 @@ void setup() {
   // Hardware USB serial connection to the Arduino IDE monitor
   Serial.begin(115200);
   Serial.println("Ready!");
+
+  /* Select the font to use with menu and all font functions */
+  display.setFixedFont( ssd1306xled_font6x8 );
+  display.begin();
+  display.clear();
+  display.printFixed(0,  8, "Normal text", STYLE_NORMAL);
+ 
 }
 
 void loop() {
@@ -90,6 +100,13 @@ void loop() {
     for(int i=0; i<numOutputChannels; i++) {
       pwmController.setChannelPWM(i, channelOutput[i]);
     }
+
+    char s[21];
+    snprintf(s, 21, "%u,%u,%u,%u", channelInput[0], channelInput[1], channelInput[2], channelInput[3]);
+    display.printFixed(0,  0, s, STYLE_NORMAL);
+    snprintf(s, 21, "%u,%u,%u,%u", channelInput[4], channelInput[5], channelInput[6], channelInput[7]);
+    display.printFixed(0,  8, s, STYLE_NORMAL);
+
   }
 }
 
