@@ -76,7 +76,7 @@ void setup() {
   display.setFixedFont( ssd1306xled_font6x8 );
   display.begin();
   display.clear();
-  display.printFixed(0,  8, "Normal text", STYLE_NORMAL);
+  display.printFixed(0,  0, "Animatronic Control", STYLE_NORMAL);
  
 }
 
@@ -102,11 +102,16 @@ void loop() {
     }
 
     char s[21];
-    snprintf(s, 21, "%u,%u,%u,%u", channelInput[0], channelInput[1], channelInput[2], channelInput[3]);
-    display.printFixed(0,  0, s, STYLE_NORMAL);
-    snprintf(s, 21, "%u,%u,%u,%u", channelInput[4], channelInput[5], channelInput[6], channelInput[7]);
-    display.printFixed(0,  8, s, STYLE_NORMAL);
-
+    snprintf(s, 21, "Ch0:%u   Ch1:%u", channelInput[0], channelInput[1]);
+    display.printFixed(0,  16, s, STYLE_NORMAL);
+    snprintf(s, 21, "Ch2:%u   Ch3:%u", channelInput[2], channelInput[3]);
+    display.printFixed(0,  24, s, STYLE_NORMAL);
+    snprintf(s, 21, "Ch4:%u   Ch5:%u", channelInput[4], channelInput[5]);
+    display.printFixed(0,  32, s, STYLE_NORMAL);
+    snprintf(s, 21, "Ch6:%u   Ch7:%u", channelInput[6], channelInput[7]);
+    display.printFixed(0,  40, s, STYLE_NORMAL);
+    snprintf(s, 21, "Ch8:%u   Ch9:%u", channelInput[8], channelInput[9]);
+    display.printFixed(0,  48, s, STYLE_NORMAL);
   }
 }
 
