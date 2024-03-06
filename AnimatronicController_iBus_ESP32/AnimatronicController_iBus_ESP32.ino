@@ -27,9 +27,10 @@ const int numInputChannels = 10;
 // This is the number of output channels (i.e. servo motors) to be controlled by the script
 // Note that the logic applied by the script means that there is not a 1:1 mapping between inputs and outputs
 // so this number can be greater or less than the number of inputs 
-const byte numOutputChannels = 4;
+const byte numOutputChannels = 10;
 // Define some common animatronic behaviour types
 enum Behaviour {
+  Passthrough, // Pass all inputs unchanged to corresponding numbered outputs
   SimpleTentacle, // X/Y tentacle movement only e.g. https://www.thingiverse.com/thing:6986
   WigglyTentacle, // X/Y tentacle with random wigggles added.
   DualTentacles, // 2x independent X/Y movement
@@ -42,9 +43,10 @@ enum Behaviour {
 FlySkyIBus iBus;
 // Initialise the PWM controller which will send output to the servos
 PCA9685 pwmController;
+// Helper function to calculate pulse required for given angle
 PCA9685_ServoEvaluator pwmServo;
 // Define the behavior which we'd like the model to follow
-Behaviour behaviour = Behaviour::SimpleTentacle;
+Behaviour behaviour = Behaviour::Passthrough;
 // Array of input channel values read from the iBus packet received from FS-iA6B
 int channelInput[numInputChannels];
 // Array of output channel values to send to PCA9685
@@ -61,13 +63,13 @@ void setup() {
   // Initialise I2C interface used for the PCA9685 PWM controller
   Wire.begin();
   // Supported baud rates are 100kHz, 400kHz, and 1000kHz
-  Wire.setClock(400000);
+  //Wire.setClock(400000);
   // Initialise PCA9685
   pwmController.resetDevices();
   pwmController.init();
   // 50Hz provides 20ms standard servo phase length
   pwmController.setPWMFrequency(50);
-  
+
   // Hardware USB serial connection to the Arduino IDE monitor
   Serial.begin(115200);
   Serial.println("Ready!");
@@ -120,7 +122,18 @@ void loop() {
 void ApplyLogic(){
   // Behaviour depends on chosen model
   switch(behaviour) {
-    
+  
+    case Behaviour::Passthrough: {
+      int n = min(numInputChannels, numOutputChannels);
+      for(int i=0; i<n; i++){
+        if(channelInput[i] > 995 && channelInput[i] < 2000) {
+          int X = map(channelInput[i], 1000, 2000, -90, 90);
+          channelOutput[i] = pwmServo.pwmForAngle(X);
+        }
+      }
+    }
+    break;
+
     case Behaviour::SimpleTentacle: {
       // Calculate movement in X axis
       int X = 0;
@@ -167,7 +180,6 @@ void ApplyLogic(){
       channelOutput[1] = pwmServo.pwmForAngle(Y);
       }
       break;
-
 
     case Behaviour::DualTentacles: {
       int X1 = 0;
